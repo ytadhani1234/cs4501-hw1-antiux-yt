@@ -367,9 +367,17 @@
     });
     const error = document.getElementById("review-error");
     const errorText = document.getElementById("review-error-text");
+    const parameterList = document.getElementById("review-parameter-list");
     const errorLink = document.getElementById("review-error-link");
-    const showReviewError = (message, page, label) => {
+    const showReviewError = (message, page, label, corrections = []) => {
       errorText.textContent = message;
+      parameterList.replaceChildren();
+      corrections.forEach(correction => {
+        const item = document.createElement("li");
+        item.textContent = correction;
+        parameterList.append(item);
+      });
+      parameterList.hidden = corrections.length === 0;
       errorLink.href = `./${page}.html`;
       errorLink.textContent = label;
       error.hidden = false;
@@ -381,7 +389,11 @@
       const current = getBookingState();
       error.hidden = true;
       if (current.location !== "Charlottesville, VA" || current.checkIn !== "2026-11-14" || current.checkOut !== "2026-11-15" || Number(current.guests) !== 2) {
-        showReviewError("The declared accommodation parameters do not satisfy the requested location, dates, and occupancy. Revisit parameter assembly.", "search", "Return to Accommodation Parameters");
+        const corrections = [];
+        if (current.location !== "Charlottesville, VA") corrections.push(`Geographic Accommodation Zone is ${current.location || "blank"}; choose Charlottesville, VA.`);
+        if (current.checkIn !== "2026-11-14" || current.checkOut !== "2026-11-15") corrections.push(`Selected stay is ${readableDate(current.checkIn)} to ${readableDate(current.checkOut)}; choose November 14, 2026. Checkout becomes November 15 automatically.`);
+        if (Number(current.guests) !== 2) corrections.push(`Human Occupancy Quantity is ${current.guests}; choose 2.`);
+        showReviewError("The declared accommodation parameters do not satisfy the requested task. Correct the values below, then press Continue on the search page to save them.", "search", "Return to Accommodation Parameters", corrections);
       } else if (current.selectedRoom !== cheapestRoomId()) {
         showReviewError("The selected accommodation does not satisfy the requested economic criterion. Revisit accommodation comparison.", "results", "Return to Accommodation Candidates");
       } else if (Object.values(current.extras).some(Boolean)) {

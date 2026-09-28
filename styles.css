@@ -166,6 +166,8 @@ a { color: #553448; }
 .recall-box input { min-height: 2.8rem; width: min(100%, 23rem); padding: .55rem; border: 1px solid #645e5c; }
 .review-error { max-width: 700px; }
 .review-error p { margin: 0 0 .55rem; }
+.review-error ul { margin: .4rem 0 .75rem; padding-left: 1.35rem; }
+.review-error li { margin: .25rem 0; }
 .review-actions { justify-content: flex-start; gap: 3rem; }
 .review-actions .green-cancel { padding: .85rem 1.5rem; font-size: 1.05rem; }
 
