@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hotel Antiusabilius | Candidates</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body class="anti-page results-page" data-page="results">
+  <div class="fake-ad" aria-label="Special information">
+    <span class="ad-star" aria-hidden="true">✦</span>
+    <div><small>SPECIAL INFORMATION · PROMOTIONAL NOTICE</small><strong>YOUR STAY MAY CONTAIN OPPORTUNITY!</strong><span class="ad-pricing-note">Pricing note: percentage tax applies to the BASE ROOM RATE only.</span></div>
+    <span class="ad-sticker">EXTRA!</span>
+  </div>
+  <main class="site-shell">
+    <header class="interior-header"><a href="./index.html" class="hotel-mini">Hotel Antiusabilius</a><span>Candidate Accommodation Inventory</span></header>
+    <div class="promo-wall">
+      <p>ANTIU PREMIUM MEMBERS SAVE EMOTIONALLY!</p>
+      <div><span>UPGRADE YOUR EXPERIENCE</span><span>DISCOVER OUR PILLOW PHILOSOPHY</span></div>
+    </div>
+    <h1 class="muted-heading">Accommodation candidates</h1>
+    <p class="important-but-boring">Three possibilities are available for administrative consideration. Examine the components as appropriate.</p>
+
+    <section class="room-grid" aria-label="Room candidates">
+      <article class="room-card" data-room="A">
+        <div class="room-card-top"><span class="room-status status-a" aria-hidden="true"></span><span class="room-id">ROOM A</span></div>
+        <h2>Regret Standard</h2>
+        <dl class="price-pieces"><div><dt>Base rate</dt><dd>$80</dd></div><div><dt>Service fee</dt><dd>$19</dd></div><div><dt>Tax</dt><dd>12%</dd></div></dl>
+        <div class="room-actions">
+          <button type="button" data-room-action="details">Details</button><button type="button" data-room-action="policies">Policies</button><button type="button" data-room-action="compare">Compare</button><button type="button" data-room-action="save">Save</button><button type="button" data-room-action="share">Share</button><button type="button" data-room-action="benefits" class="fake-primary">Benefits</button><button type="button" data-room-action="upgrade" class="fake-primary">Upgrade</button><button type="button" data-room-action="apply" class="secondary-looking-primary apply-button">Apply</button>
+        </div>
+      </article>
+      <article class="room-card" data-room="B">
+        <div class="room-card-top"><span class="room-status status-b" aria-hidden="true"></span><span class="room-id">ROOM B</span></div>
+        <h2>Questionable Deluxe</h2>
+        <dl class="price-pieces"><div><dt>Base rate</dt><dd>$86</dd></div><div><dt>Service fee</dt><dd>$8</dd></div><div><dt>Tax</dt><dd>8%</dd></div></dl>
+        <div class="room-actions">
+          <button type="button" data-room-action="details">Details</button><button type="button" data-room-action="policies">Policies</button><button type="button" data-room-action="compare">Compare</button><button type="button" data-room-action="save">Save</button><button type="button" data-room-action="share">Share</button><button type="button" data-room-action="benefits" class="fake-primary">Benefits</button><button type="button" data-room-action="upgrade" class="fake-primary">Upgrade</button><button type="button" data-room-action="apply" class="secondary-looking-primary apply-button">Apply</button>
+        </div>
+      </article>
+      <article class="room-card" data-room="C">
+        <div class="room-card-top"><span class="room-status status-c" aria-hidden="true"></span><span class="room-id">ROOM C</span></div>
+        <h2>Executive Disappointment</h2>
+        <dl class="price-pieces"><div><dt>Base rate</dt><dd>$75</dd></div><div><dt>Service fee</dt><dd>$25</dd></div><div><dt>Tax</dt><dd>10%</dd></div></dl>
+        <div class="room-actions">
+          <button type="button" data-room-action="details">Details</button><button type="button" data-room-action="policies">Policies</button><button type="button" data-room-action="compare">Compare</button><button type="button" data-room-action="save">Save</button><button type="button" data-room-action="share">Share</button><button type="button" data-room-action="benefits" class="fake-primary">Benefits</button><button type="button" data-room-action="upgrade" class="fake-primary">Upgrade</button><button type="button" data-room-action="apply" class="secondary-looking-primary apply-button">Apply</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="code-panel" class="room-code-box" aria-live="polite" hidden>
+      <h2>TRANSIENT ACCOMMODATION IDENTIFIER</h2>
+      <p id="room-code-display" class="code-value"></p>
+      <p>You will need this code during final validation.</p>
+      <button id="acknowledge-code" type="button">I Have Perceived This</button>
+    </section>
+    <p id="selection-message" class="selection-message" aria-live="polite"></p>
+    <p id="results-error" class="form-error" role="alert" hidden></p>
+    <div class="action-row results-actions">
+      <button id="cancel-search" class="green-cancel" type="button">Cancel Search</button>
+      <button id="proceed-results" class="red-continue" type="button">Proceed</button>
+    </div>
+  </main>
+</body>
+</html>

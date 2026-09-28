@@ -1,0 +1,239 @@
+:root {
+  --paper: #eee8dc;
+  --washed: #d9d8c8;
+  --washed-alt: #d7dacb;
+  --dark: #342936;
+  --warning: #a5151b;
+  --green: #438a4b;
+  --muted: #77736f;
+  --promo: #ffe65a;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { min-width: 320px; }
+body { margin: 0; }
+button, input, select { font: inherit; }
+button { cursor: pointer; border: 1px solid #6d6565; border-radius: 2px; padding: .64rem .92rem; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #293bef; outline-offset: 3px; }
+a { color: #553448; }
+.anti-page { background: var(--paper); color: var(--dark); font-family: Arial, sans-serif; line-height: 1.45; min-height: 100vh; }
+.site-shell { width: min(100% - 2.2rem, 1160px); margin: 0 auto; padding-bottom: 3rem; }
+.hotel-header { background: #ded9c7; border: 5px double #78604f; margin-top: 1.15rem; padding: 1.35rem 2rem .65rem; text-align: center; }
+.eyebrow { text-transform: uppercase; letter-spacing: .2em; font-size: .75rem; }
+.hotel-logo { font-family: Georgia, serif; font-size: clamp(2.1rem, 6vw, 4.2rem); margin: .2rem 0; line-height: 1.08; text-shadow: 2px 2px #c4b878; }
+.hotel-logo span { font-family: Impact, Arial, sans-serif; letter-spacing: .035em; color: #61404c; }
+.interior-header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; border-bottom: 4px double #756166; padding: 1.25rem .2rem .55rem; font-size: .78rem; color: #655d57; }
+.hotel-mini { font: bold 1.24rem Georgia, serif; color: #593344; text-decoration: none; }
+.hotel-mini:hover { text-decoration: underline; }
+.decorative-text { font-family: "Comic Sans MS", cursive; font-size: 1.13rem; color: #7e425b; }
+.important-but-boring { font-size: .86rem; color: #6f6962; max-width: 56rem; }
+.irrelevant-highlight { background: #e7de86; border: 3px dashed #a97d3c; padding: .9rem 1.1rem; font-family: Georgia, serif; }
+.tiny-policy { font-size: .73rem; color: #6f6b62; }
+.secondary-looking-primary { background: #d4d4d4; color: #4f4b4b; border-color: #aaa; box-shadow: none; }
+.secondary-looking-primary:hover { background: #c3c3c3; }
+.green-cancel { background: var(--green); color: #fff; border-color: #24652e; font-weight: bold; box-shadow: 2px 3px #b5ad95; }
+.green-cancel:hover { background: #33733b; }
+.red-continue { background: var(--warning); color: #fff; border-color: #67111a; font-weight: bold; box-shadow: 2px 3px #b7a6a0; }
+.red-continue:hover { background: #871016; }
+.action-row { display: flex; align-items: center; gap: 1rem; margin: 1.8rem 0; }
+.form-error { background: #fff6da; border-left: 5px solid #a5151b; color: #421f21; padding: .8rem 1rem; max-width: 43rem; }
+
+/* The first page is unusually clear about the assignment, then misdirects the eye. */
+.task-box { background: #faf8f0; border: 3px solid #4d3d4a; box-shadow: 7px 7px #c0b9aa; margin: 1.8rem auto; padding: 1.3rem 1.6rem; max-width: 850px; }
+.task-box h2 { font: 2rem Impact, Arial, sans-serif; letter-spacing: .05em; margin: .2rem 0 .75rem; }
+.task-kicker { font-size: .75rem; text-transform: uppercase; color: #7b565a; margin: 0; }
+.task-box > p { font-size: 1.08rem; }
+.task-facts { display: flex; gap: 2rem; flex-wrap: wrap; background: #e6e5d5; padding: .7rem 1rem; }
+.task-facts div { min-width: 11rem; }
+.task-facts dt { font-size: .75rem; text-transform: uppercase; letter-spacing: .09em; }
+.task-facts dd { font-weight: bold; margin: 0; }
+.privacy-note { border-top: 1px solid #aa9f92; padding-top: .6rem; color: #5b4c4d; }
+.home-distractions { display: grid; grid-template-columns: minmax(0, 1fr) 10rem; gap: 2rem; align-items: end; margin: 2.3rem auto; max-width: 1000px; }
+.home-decorative-actions { display: flex; gap: .8rem; flex-wrap: wrap; }
+.competing-cta { background: #fae345; color: #453319; border: 3px solid #905b19; min-height: 4.3rem; font: 1.3rem Impact, Arial, sans-serif; text-transform: uppercase; box-shadow: 5px 5px #b18d35; }
+.competing-cta-alt { background: #b4d67a; border-color: #477a30; box-shadow: 5px 5px #7b9e5a; }
+.home-real-action { font-size: .89rem; }
+.site-footer { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3.2rem; border-top: 1px solid #a69c91; padding: 1rem .2rem; font-size: .86rem; }
+
+/* Date selection deliberately takes five decisions. */
+.uneven-title { display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: end; gap: 1rem; }
+.uneven-title h1 { font: 2.1rem Georgia, serif; margin-bottom: .4rem; }
+.search-section { border: 1px solid #a9a49a; background: #f1eedf; margin: 1.4rem 0; padding: 1.2rem 1.4rem; }
+.search-section h2 { font-family: Georgia, serif; font-size: 1.2rem; margin-top: 0; }
+.search-section label, .picker-grid label { display: block; font-size: .91rem; font-weight: 600; margin-bottom: .35rem; }
+.search-section select { background: #fdfcf8; border: 1px solid #706d67; color: #352e36; min-width: 14rem; max-width: 100%; min-height: 2.65rem; padding: .35rem .55rem; }
+.search-section select:disabled { opacity: .6; cursor: not-allowed; }
+.location-section { max-width: 45rem; }
+.deep-picker { background: #dedfcf; }
+.deep-picker .irrelevant-highlight { width: fit-content; margin-top: 0; }
+.picker-intro { font-family: Georgia, serif; font-style: italic; }
+.picker-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+.picker-grid > div { background: #eae6da; padding: .8rem; min-width: 0; }
+.guest-count-section { max-width: 29rem; background: #e8e8dc; }
+.search-actions { justify-content: space-between; }
+.search-actions .green-cancel { padding: .9rem 1.35rem; font-size: 1.05rem; }
+
+/* Results make advertising louder than the room data. */
+.fake-ad { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .6rem max(1rem, calc((100vw - 1160px) / 2)); background: repeating-linear-gradient(115deg, #ffe354 0 22px, #fbcf57 22px 44px); border-top: 5px solid #e72c2c; border-bottom: 5px dotted #713a6a; color: #55291d; min-height: 6.5rem; }
+.fake-ad > div { display: flex; flex-direction: column; align-items: start; }
+.fake-ad small { font-size: .62rem; letter-spacing: .12em; }
+.fake-ad strong { font: clamp(1.2rem, 3vw, 2rem) Impact, Arial, sans-serif; letter-spacing: .04em; }
+.ad-star { font-size: 3.4rem; color: #d11522; text-shadow: 2px 2px #fff; }
+.ad-sticker { background: #bd232f; color: white; padding: .55rem; transform: rotate(11deg); font: bold 1.3rem Impact, Arial, sans-serif; }
+.ad-pricing-note { font-size: .76rem; background: #f8e49d; padding: .1rem .3rem; }
+.promo-wall { margin: 1.2rem 0 1.7rem; background: #e6d6ab; border: 7px double #81616f; padding: .7rem 1.2rem; text-align: center; }
+.promo-wall p { font: clamp(1.7rem, 4vw, 3.3rem) Impact, Arial, sans-serif; color: #9f161c; margin: .2rem; text-shadow: 2px 2px #f7e672; }
+.promo-wall div { display: flex; justify-content: space-around; flex-wrap: wrap; gap: .4rem; font: bold clamp(.95rem, 2.2vw, 1.5rem) Georgia, serif; color: #3e693a; }
+.muted-heading { font: 1.28rem Georgia, serif; color: #6c6570; margin-bottom: .2rem; }
+.room-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.room-card { min-width: 0; background: #e8e6d9; border: 1px solid #b2aea4; padding: .85rem; box-shadow: 2px 2px #ccc5b6; }
+.room-card.applied-room { border-color: #7e6d67; box-shadow: 0 0 0 2px #a49b8b; }
+.room-card-top { display: flex; align-items: center; justify-content: space-between; }
+.room-status { display: inline-block; width: 2.4rem; height: 1.15rem; border: 1px solid #c4c9b9; }
+.status-a { background: #d8dec8; }
+.status-b { background: #d6d8c9; }
+.status-c { background: #d9ddc8; }
+.room-id { font: .75rem "Courier New", monospace; color: #74716e; }
+.room-card h2 { font: 1.1rem Georgia, serif; color: #5d515d; margin: .9rem 0 .5rem; }
+.price-pieces { margin: .7rem 0 1.2rem; font-size: .85rem; color: #676265; }
+.price-pieces div { display: flex; justify-content: space-between; padding: .23rem .2rem; border-bottom: 1px dotted #bbb8ae; }
+.price-pieces dd { margin: 0; font-family: "Courier New", monospace; }
+.room-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .3rem; }
+.room-actions button { min-width: 0; padding: .49rem .15rem; font-size: .73rem; background: #d8d4cc; color: #514b4e; }
+.room-actions button:hover { background: #c9c4bc; }
+.room-actions button.saved-action { border-color: #4d754b; background: #dce9d3; }
+.room-actions .fake-primary { grid-column: span 2; font-size: .94rem; background: #f5dc45; border-color: #aa7820; color: #51321d; font-weight: bold; }
+.room-actions .fake-primary:hover { background: #e7ca37; }
+.room-actions .apply-button { grid-column: span 4; width: 40%; justify-self: end; background: #d4d4d4; color: #555; font-weight: normal; }
+.room-code-box { margin: 1.5rem auto; padding: 1.2rem; max-width: 38rem; border: 5px double #7a6061; background: #fbf6d7; text-align: center; }
+.room-code-box h2 { font: 1.1rem "Courier New", monospace; margin: 0; }
+.code-value { font: bold 2.2rem "Courier New", monospace; letter-spacing: .12em; margin: .75rem 0; }
+.room-code-box button { background: #d1d0c6; }
+.selection-message { min-height: 1.2rem; font: .88rem Georgia, serif; color: #675d5b; }
+.results-actions { justify-content: space-between; }
+.results-actions button { font-size: 1.1rem; }
+
+/* The checkbox truth remains deterministic even when the language does not. */
+.configure-page h1 { font: 2.4rem Georgia, serif; margin: .3rem 0; }
+.extras-list { display: grid; gap: .8rem; margin: 1.5rem 0; max-width: 850px; }
+.extra-row { display: grid; grid-template-columns: 1fr auto; column-gap: 1rem; padding: 1rem 1.1rem; border: 2px solid #827c73; background: #e6e2d4; }
+.extra-row.extra-off { border-left: 10px solid var(--green); }
+.extra-row.extra-on { border-left: 10px solid var(--warning); background: #f1d8d3; }
+.extra-row label { cursor: pointer; }
+.confusing-label { display: block; font: bold 1.08rem Georgia, serif; }
+.extra-name { display: block; font-size: .76rem; color: #77716d; margin-top: .15rem; }
+.extra-row input { width: 1.5rem; height: 1.5rem; accent-color: var(--warning); cursor: pointer; }
+.extra-row p { grid-column: 1 / -1; margin: .5rem 0 0; font-size: .78rem; color: #69615e; }
+.configure-actions { justify-content: center; }
+.configure-actions .green-cancel { font-size: 1.12rem; padding: .85rem 2.4rem; }
+.configure-actions .red-continue { font-size: .92rem; }
+
+/* A noisy policy surrounds usable form controls. */
+.guest-page h1 { font: 2.3rem Georgia, serif; }
+.fake-info-notice { background: #e2efdc; border: 2px solid #5a8056; padding: .75rem 1rem; font-weight: bold; }
+.declaration-panel { max-width: 780px; margin: 1.3rem auto; padding: 1.2rem; border: 4px ridge #aa9b70; background: repeating-linear-gradient(45deg, #f1eddc 0 6px, #ebe2ca 6px 8px); }
+.centered-reading { text-align: center; }
+.declaration-panel h2 { font: bold 1.05rem "Courier New", monospace; letter-spacing: .07em; }
+.declaration-panel p:nth-of-type(1) { font-family: Georgia, serif; font-size: .86rem; }
+.declaration-cursive { font-family: "Comic Sans MS", cursive; color: #6e5260; }
+.policy-section { margin: 2rem 0; }
+.policy-section h2 { font: 1.4rem Georgia, serif; background: #d9d4b4; padding: .4rem .7rem; width: fit-content; }
+.policy-copy { border: 1px dotted #a69e91; padding: .9rem 1.4rem; background: repeating-linear-gradient(90deg, #e6e4d6 0 17px, #e9e7d9 17px 18px); font-family: Georgia, serif; font-size: .82rem; line-height: 1.62; }
+.policy-copy p { margin: .75rem 0 1.05rem; }
+.policy-copy p:nth-child(2) { font-family: "Courier New", monospace; font-size: .77rem; }
+.policy-copy p:nth-child(4) { font-family: "Comic Sans MS", cursive; font-size: .79rem; }
+.guest-form { background: #f5f2e9; border: 2px solid #9a9083; padding: 1.2rem; }
+.guest-form h2 { font: 1.25rem Georgia, serif; }
+.field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.3rem; }
+.field label { display: block; font-weight: bold; margin-bottom: .3rem; }
+.field input { width: 100%; min-height: 2.75rem; border: 1px solid #716e68; padding: .55rem; background: #fff; }
+.field input[aria-invalid="true"] { border: 2px solid #ab1820; background: #fff4f1; }
+.field-error { display: block; min-height: 1.2rem; color: #991820; }
+.guest-actions { justify-content: space-between; }
+
+/* Review obscures state while leaving recovery paths. */
+.review-page h1 { font: 2.15rem Georgia, serif; }
+.review-noise { display: flex; flex-direction: column; max-width: 700px; gap: .3rem; background: #e1d78e; border: 4px double #7a6947; padding: 1.2rem; text-align: center; font-family: Georgia, serif; }
+.review-noise strong { font-family: Impact, Arial, sans-serif; font-size: 1.7rem; }
+.booking-details { background: #e7e3d8; border: 1px solid #a8a095; max-width: 720px; margin: 2rem 0; padding: .8rem; color: #6d6662; }
+.booking-details summary { cursor: pointer; font-size: .83rem; }
+.booking-details dl { display: grid; grid-template-columns: minmax(7rem, .4fr) 1fr; gap: .45rem .8rem; padding: .5rem; }
+.booking-details dt { font-weight: bold; }
+.booking-details dd { margin: 0; }
+.recall-box { max-width: 660px; border: 3px solid #bdb8a8; background: #f6f3e9; padding: 1.4rem; }
+.recall-box label { display: block; font: 1.03rem Georgia, serif; margin-bottom: .75rem; }
+.recall-box input { min-height: 2.8rem; width: min(100%, 23rem); padding: .55rem; border: 1px solid #645e5c; }
+.review-error { max-width: 700px; }
+.review-error p { margin: 0 0 .55rem; }
+.review-actions { justify-content: flex-start; gap: 3rem; }
+.review-actions .green-cancel { padding: .85rem 1.5rem; font-size: 1.05rem; }
+
+/* Success and instructor documentation intentionally restore clarity. */
+.confirmation-page { min-height: 100vh; background: #edf1e8; color: #202a20; font: 1rem/1.5 Arial, sans-serif; display: grid; place-items: center; padding: 1rem; }
+.confirmation-card { width: min(100%, 650px); background: #fff; padding: clamp(1.3rem, 4vw, 2.6rem); border: 2px solid #9ab09b; box-shadow: 0 9px 24px #71836d35; }
+.confirmation-card h1 { font-size: clamp(2rem, 5vw, 3rem); margin: .2rem 0 .6rem; color: #286231; }
+.confirmation-subtitle { font-family: Georgia, serif; }
+.confirmation-number { background: #e4f3e7; border-left: 5px solid #438a4b; padding: .7rem 1rem; display: flex; flex-direction: column; margin: 1.5rem 0; }
+.confirmation-number span { font-size: .82rem; }
+.confirmation-number strong { font: bold 1.5rem "Courier New", monospace; }
+.confirmation-details div { display: flex; gap: 1rem; padding: .45rem 0; border-bottom: 1px solid #ddd; }
+.confirmation-details dt { min-width: 5rem; font-weight: bold; }
+.confirmation-details dd { margin: 0; }
+.confirmation-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.6rem; }
+.doc-link-button, .confirmation-actions button { display: inline-block; padding: .7rem 1rem; border: 1px solid #336a3b; border-radius: 2px; background: #438a4b; color: #fff; text-decoration: none; }
+.confirmation-actions button { background: #e8ece8; color: #2a4c2e; }
+
+.documentation-page { background: #f7f7f7; color: #222; font: 16px/1.5 Arial, sans-serif; }
+.documentation-shell { width: min(100% - 2rem, 1250px); margin: auto; padding: 2rem 0 4rem; }
+.documentation-header { border-bottom: 3px solid #334d60; padding-bottom: 1.2rem; }
+.documentation-header h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.2; margin: .3rem 0 .7rem; }
+.doc-kicker { color: #40596b; font-weight: bold; letter-spacing: .12em; text-transform: uppercase; font-size: .78rem; }
+.documentation-page a { color: #195c91; }
+.doc-intro { background: #fff; border-left: 5px solid #426b88; margin: 1.5rem 0 2.2rem; padding: .8rem 1.4rem; }
+.doc-intro h2 { margin: .2rem 0; }
+.doc-main-heading { font-size: clamp(1.5rem, 3vw, 2rem); margin: 2rem 0 1rem; }
+.documentation-table-wrap { overflow-x: auto; border: 1px solid #ccc; background: white; }
+.documentation-table { width: 100%; min-width: 1050px; border-collapse: collapse; font-size: .92rem; }
+.documentation-table th, .documentation-table td { text-align: left; vertical-align: top; padding: .8rem; border-bottom: 1px solid #d7dce0; }
+.documentation-table thead th { background: #dce7ee; color: #263e50; position: sticky; top: 0; }
+.documentation-table tbody tr:nth-child(even) { background: #f1f5f7; }
+.documentation-table tbody th { width: 3rem; }
+.documentation-table td:nth-child(2) { min-width: 12rem; }
+.documentation-table td:nth-child(3) { min-width: 10rem; }
+.documentation-table td:nth-child(4) { min-width: 7rem; }
+.documentation-table td:nth-child(5), .documentation-table td:nth-child(6) { min-width: 15rem; }
+.doc-cheatsheet { margin-top: 2.2rem; background: white; padding: 1.4rem 1.8rem; border: 1px solid #cbd2d7; }
+.doc-cheatsheet h2 { margin-top: 0; }
+.doc-cheatsheet li { padding: .15rem 0; }
+.doc-calculations { border-left: 4px solid #7999a8; padding-left: 1rem; }
+.doc-calculations p { margin: .35rem 0; }
+
+.anti-modal { width: min(100% - 2rem, 470px); border: 4px double #654d5f; background: #f5eddb; color: #352c36; padding: 1.2rem; box-shadow: 0 15px 45px #241a1d80; }
+.anti-modal::backdrop { background: #271d29a8; }
+.anti-modal h2 { margin-top: 0; font-family: Georgia, serif; }
+.anti-modal p { overflow-wrap: anywhere; }
+.modal-controls { display: flex; justify-content: flex-end; gap: .65rem; flex-wrap: wrap; margin-top: 1.3rem; }
+
+@media (max-width: 900px) {
+  .room-grid { grid-template-columns: 1fr; }
+  .room-card { max-width: 650px; width: 100%; }
+  .room-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .site-shell { width: min(100% - 1rem, 1160px); }
+  .interior-header, .uneven-title, .site-footer { display: block; }
+  .home-distractions { grid-template-columns: 1fr; gap: 1rem; }
+  .home-real-action { justify-self: start; }
+  .picker-grid, .field-grid { grid-template-columns: 1fr; }
+  .fake-ad { gap: .4rem; }
+  .ad-star { font-size: 2rem; }
+  .ad-sticker { display: none; }
+  .search-section select { width: 100%; }
+  .action-row { flex-wrap: wrap; }
+  .search-actions, .results-actions, .guest-actions { justify-content: space-between; }
+  .review-actions { gap: 1rem; }
+  .booking-details dl { grid-template-columns: 1fr; }
+  .booking-details dd { margin-bottom: .45rem; }
+}

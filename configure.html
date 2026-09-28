@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hotel Antiusabilius | Preferences</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body class="anti-page configure-page" data-page="configure">
+  <main class="site-shell">
+    <header class="interior-header"><a href="./index.html" class="hotel-mini">Hotel Antiusabilius</a><span>Optional Reservation Modifiers</span></header>
+    <p class="decorative-text">All preferences deserve equivalent ceremonial consideration.</p>
+    <h1>Preference Resolution</h1>
+    <p class="important-but-boring">For each row, ON means that the named feature will be included. OFF excludes it.</p>
+    <form id="configure-form">
+      <div class="extras-list">
+        <div class="extra-row"><label for="breakfast"><span class="confusing-label">Disable Breakfast Exclusion</span><span class="extra-name">Breakfast</span></label><input id="breakfast" name="breakfast" type="checkbox"><p>ON includes breakfast. OFF leaves breakfast out.</p></div>
+        <div class="extra-row"><label for="premiumView"><span class="confusing-label">Prevent Premium View Suppression</span><span class="extra-name">Premium View</span></label><input id="premiumView" name="premiumView" type="checkbox"><p>ON includes the premium view. OFF leaves it out.</p></div>
+        <div class="extra-row"><label for="flexibleCancellation"><span class="confusing-label">Standard Non-Rigidity</span><span class="extra-name">Flexible Cancellation</span></label><input id="flexibleCancellation" name="flexibleCancellation" type="checkbox"><p>ON includes flexible cancellation. OFF leaves it out.</p></div>
+        <div class="extra-row"><label for="luxuryPillow"><span class="confusing-label">Reject Pillow Enhancement</span><span class="extra-name">Luxury Pillow Package</span></label><input id="luxuryPillow" name="luxuryPillow" type="checkbox"><p>ON includes the luxury pillow package. OFF leaves it out.</p></div>
+      </div>
+      <div class="action-row configure-actions"><button id="return-results" class="green-cancel" type="button">Return</button><button class="red-continue" type="submit">Accept Resolution</button></div>
+    </form>
+    <aside class="irrelevant-highlight">Our pillow philosophy cannot be summarized in fewer than several unnecessary decisions.</aside>
+  </main>
+</body>
+</html>

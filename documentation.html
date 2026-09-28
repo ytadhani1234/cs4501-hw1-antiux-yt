@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hotel Antiusabilius | HW1 Anti-UX Documentation</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body class="documentation-page" data-page="documentation">
+  <main class="documentation-shell">
+    <header class="documentation-header"><p class="doc-kicker">CS4501 · Usability Engineering</p><h1>Hotel Antiusabilius — HW1 Anti-UX Documentation</h1><a href="./index.html">Return to booking home</a></header>
+    <section class="doc-intro"><h2>Task</h2><p>Book the cheapest available room for two adults at Hotel Antiusabilius in Charlottesville, Virginia for November 14–15, 2026 without premium upgrades and complete the reservation using fake guest information.</p><p>The site is a deterministic classroom simulation. It collects no payments and sends no data to a server.</p></section>
+    <section aria-labelledby="violations-title"><h2 id="violations-title" class="doc-main-heading">16 INTENTIONAL USABILITY VIOLATIONS</h2>
+      <div class="documentation-table-wrap"><table class="documentation-table">
+        <thead><tr><th scope="col">#</th><th scope="col">Course Principle</th><th scope="col">Lecture</th><th scope="col">Where</th><th scope="col">How It Is Intentionally Broken</th><th scope="col">Expected Interaction Cost</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">1</th><td>Distinguish colors by saturation/brightness and use adequate contrast</td><td>Perception 1 — Color Guidelines</td><td>Results</td><td>Room states use unnecessarily similar pale colors.</td><td>Users must spend additional perceptual effort distinguishing visual states.</td></tr>
+          <tr><th scope="row">2</th><td>Use color redundantly with other cues</td><td>Perception 1 — Color Guidelines</td><td>Results</td><td>Availability/state is communicated only through color instead of text/icons plus color.</td><td>Users must infer meaning entirely from subtle visual differences.</td></tr>
+          <tr><th scope="row">3</th><td>Avoid ambiguity</td><td>Perception 2 — Design Guidelines</td><td>Search, Results, Configuration, Review</td><td>Actions use vague labels such as “Apply,” “Accept Resolution,” and “Accommodation Parameters.”</td><td>Users must stop and interpret what controls probably do.</td></tr>
+          <tr><th scope="row">4</th><td>Be consistent</td><td>Perception 2 — Design Guidelines</td><td>Entire booking flow</td><td>Forward controls repeatedly change name, appearance, and location.</td><td>Users cannot reuse a learned interaction pattern from one page to the next.</td></tr>
+          <tr><th scope="row">5</th><td>Respect familiar patterns / prior experience</td><td>Attention 2 — Prior Experience</td><td>Search, Results, Configuration, Review</td><td>Green represents cancellation/back while red represents continuation/confirmation.</td><td>Automatic learned color associations conflict with required actions.</td></tr>
+          <tr><th scope="row">6</th><td>Maintain familiar temporal order</td><td>Attention 2 — Temporal Order</td><td>Search</td><td>Months, weeks, and dates are deliberately presented out of chronological order.</td><td>Users cannot rely on automatic chronological scanning.</td></tr>
+          <tr><th scope="row">7</th><td>Avoid placing important information where banner blindness will hide it</td><td>Attention 2 — Banner Blindness</td><td>Results</td><td>A critical tax-calculation rule is placed inside a banner styled like an advertisement.</td><td>Users may overlook essential task information and need to re-search the interface.</td></tr>
+          <tr><th scope="row">8</th><td>Limit calls to action per screen</td><td>Memory 1 — Memory Guidelines</td><td>Results</td><td>Every room displays numerous equally plausible actions while the required Apply action is visually weak.</td><td>Users must inspect and compare many competing actions.</td></tr>
+          <tr><th scope="row">9</th><td>Make instructions accessible during a task</td><td>Memory 1 — Memory Guidelines</td><td>Results → Review</td><td>The room identifier and instruction to remember it disappear after acknowledgment.</td><td>Users must retain information rather than referencing it later.</td></tr>
+          <tr><th scope="row">10</th><td>Promote recognition over recall</td><td>Memory 2 — Recall vs. Recognition</td><td>Review</td><td>Users must type a previously shown room identifier without seeing the available identifiers.</td><td>Uncued recall is more cognitively demanding than recognition.</td></tr>
+          <tr><th scope="row">11</th><td>Use broad/shallow navigation instead of narrow/deep hierarchies</td><td>Memory 1 — Memory Guidelines</td><td>Search</td><td>Selecting one date requires navigating through year, quarter, month, week, and day.</td><td>Users perform several unnecessary navigation decisions.</td></tr>
+          <tr><th scope="row">12</th><td>Create a clear visual hierarchy</td><td>Perception 2 — Structure Guidelines</td><td>Results</td><td>Promotional and irrelevant information is visually dominant while task-critical information is visually weak.</td><td>Users must actively search for relevant information.</td></tr>
+          <tr><th scope="row">13</th><td>Use readable typography and familiar language</td><td>Reading — Guidelines</td><td>Guest Information</td><td>Task-related content uses jargon, small text, decorative typography, uppercase wording, centered text, and noisy backgrounds.</td><td>Reading and comprehension require more conscious effort.</td></tr>
+          <tr><th scope="row">14</th><td>Minimize the need for reading</td><td>Reading — Guidelines</td><td>Guest Information</td><td>A long repetitive policy block surrounds a small amount of useful information.</td><td>Users must scan excessive text to locate task-relevant instructions.</td></tr>
+          <tr><th scope="row">15</th><td>Prominently indicate system status and progress</td><td>Thinking &amp; Problem-Solving — Guidelines</td><td>Entire booking flow / Review</td><td>No progress bar, step count, breadcrumb, or persistent booking state is provided.</td><td>Users must mentally reconstruct where they are and what remains.</td></tr>
+          <tr><th scope="row">16</th><td>Let users use perception rather than calculations</td><td>Thinking &amp; Problem-Solving — Guidelines</td><td>Results</td><td>Room totals are not calculated; users receive base price, fee, and percentage tax separately.</td><td>Users must perform arithmetic and compare calculated totals manually.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="doc-cheatsheet" aria-labelledby="cheatsheet-title"><h2 id="cheatsheet-title">Completion Cheatsheet</h2>
+      <ol><li>Begin the reservation.</li><li>Choose Charlottesville, VA.</li><li>Choose year 2026.</li><li>Choose Q4.</li><li>Choose November.</li><li>Choose Week 2.</li><li>Choose November 14.</li><li>Choose 2 adults.</li><li>Continue to room results.</li><li>Notice the pricing rule in the ad-like banner: tax applies to base rate only.</li><li>Determine that Room B — Questionable Deluxe — is cheapest.</li><li>Click the boring “Apply” button on Room B.</li><li>Remember code <strong>B-417-K</strong> and acknowledge the panel.</li><li>Proceed.</li><li>Leave all premium upgrades OFF.</li><li>Enter fake guest information.</li><li>On the review screen enter B-417-K.</li><li>Click the RED “Finalize Reservation” button.</li><li>Reach “Reservation Complete.”</li></ol>
+      <h3>Room calculations</h3><div class="doc-calculations"><p><strong>Room A:</strong> $80 + $19 + 12% of $80 = $108.60</p><p><strong>Room B:</strong> $86 + $8 + 8% of $86 = $100.88</p><p><strong>Room C:</strong> $75 + $25 + 10% of $75 = $107.50</p></div><p><strong>Correct cheapest room: Room B.</strong></p>
+    </section>
+  </main>
+</body>
+</html>
