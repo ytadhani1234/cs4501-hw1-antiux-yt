@@ -1,429 +1,295 @@
+"use strict";
 (() => {
-  "use strict";
 
-  const STORAGE_KEY = "antiBooking";
-  const ROOM_DATA = {
-    A: { id: "A", name: "Regret Standard", base: 80, fee: 19, tax: 0.12, code: "A-203-X", description: "A straightforward room with a proudly complicated name." },
-    B: { id: "B", name: "Questionable Deluxe", base: 86, fee: 8, tax: 0.08, code: "B-417-K", description: "An unusually deluxe approach to basic temporary occupancy." },
-    C: { id: "C", name: "Executive Disappointment", base: 75, fee: 25, tax: 0.10, code: "C-882-P", description: "Executive atmosphere with an administrative emphasis." }
-  };
-  const EXTRA_NAMES = {
-    breakfast: "Breakfast",
-    premiumView: "Premium View",
-    flexibleCancellation: "Flexible Cancellation",
-    luxuryPillow: "Luxury Pillow Package"
-  };
-  const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const QUARTER_MONTHS = { Q1: [3, 1, 2], Q2: [6, 4, 5], Q3: [9, 7, 8], Q4: [12, 10, 11] };
-  const WEEK_ORDER = [3, 1, 4, 2];
+const missionState = {
+  started: false,
+  startTime: null,
+  timerInterval: null,
+  finalTime: null,
+  powerComplete: false,
+  navigationComplete: false,
+  communicationsComplete: false,
+  engineComplete: false,
+  commStage: "code",
+  commCode: "K21-4187-X",
+  selectedDestination: null,
+  enginePrimed: false,
+  engineArmed: false
+};
 
-  function emptyBookingState() {
-    return {
-      location: "", checkIn: "", checkOut: "", guests: 0,
-      datePath: { year: "", quarter: "", month: "", week: "", day: "" },
-      selectedRoom: "", roomCode: "", codeAcknowledged: false, savedRooms: [],
-      extras: { breakfast: false, premiumView: false, flexibleCancellation: false, luxuryPillow: false },
-      guest: { firstName: "", lastName: "", email: "", phone: "" },
-      confirmationNumber: ""
-    };
-  }
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
+let previousFocus = null;
 
-  function getBookingState() {
-    const defaults = emptyBookingState();
-    try {
-      const stored = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null");
-      if (!stored || typeof stored !== "object" || Array.isArray(stored)) return defaults;
-      return {
-        ...defaults, ...stored,
-        datePath: { ...defaults.datePath, ...(stored.datePath || {}) },
-        extras: { ...defaults.extras, ...(stored.extras || {}) },
-        guest: { ...defaults.guest, ...(stored.guest || {}) },
-        savedRooms: Array.isArray(stored.savedRooms) ? stored.savedRooms : []
-      };
-    } catch {
-      return defaults;
-    }
-  }
+function showScreen(screenId) {
+  $$(".screen").forEach((screen) => { screen.hidden = screen.id !== screenId; });
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
 
-  function saveBookingState(state) { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  function updateBookingState(partial) {
-    const current = getBookingState();
-    const next = {
-      ...current, ...partial,
-      datePath: { ...current.datePath, ...(partial.datePath || {}) },
-      extras: { ...current.extras, ...(partial.extras || {}) },
-      guest: { ...current.guest, ...(partial.guest || {}) }
-    };
-    saveBookingState(next);
-    return next;
-  }
-  function clearBookingState() { sessionStorage.removeItem(STORAGE_KEY); }
-  function goTo(page) { window.location.href = `./${page}.html`; }
-  function calculateRoomTotal(room) { return room.base + room.fee + room.base * room.tax; }
-  function cheapestRoomId() {
-    return Object.values(ROOM_DATA).reduce((lowest, room) => calculateRoomTotal(room) < calculateRoomTotal(lowest) ? room : lowest).id;
-  }
-  function hasSearch(state) { return Boolean(state.location && state.checkIn && state.checkOut && Number(state.guests)); }
-  function hasRoom(state) { return Boolean(ROOM_DATA[state.selectedRoom] && state.roomCode === ROOM_DATA[state.selectedRoom].code && state.codeAcknowledged); }
-  function guestErrors(guest) {
-    const errors = {};
-    if (!String(guest.firstName || "").trim()) errors.firstName = "Enter a fake first name.";
-    if (!String(guest.lastName || "").trim()) errors.lastName = "Enter a fake last name.";
-    if (!String(guest.email || "").includes("@")) errors.email = "Enter a fake email containing @.";
-    if (!String(guest.phone || "").trim()) errors.phone = "Enter a fake phone number.";
-    return errors;
-  }
-  function hasGuest(state) { return Object.keys(guestErrors(state.guest)).length === 0; }
-  function requireState(fields) {
-    const state = getBookingState();
-    if ((fields.includes("search") && !hasSearch(state)) ||
-        (fields.includes("room") && !hasRoom(state)) ||
-        (fields.includes("guest") && !hasGuest(state)) ||
-        (fields.includes("confirmation") && !state.confirmationNumber)) {
-      window.location.replace("./index.html");
-      return false;
-    }
-    return true;
-  }
-  function showError(element, message) { element.textContent = message; element.hidden = false; }
-  function hideError(element) { element.textContent = ""; element.hidden = true; }
+function formatElapsedTime(milliseconds) {
+  const seconds = Math.floor(milliseconds / 1000);
+  return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
 
-  let modal;
-  let modalTrigger;
-  function ensureModal() {
-    if (modal) return modal;
-    modal = document.createElement("dialog");
-    modal.className = "anti-modal";
-    modal.setAttribute("aria-labelledby", "modal-title");
-    document.body.append(modal);
-    modal.addEventListener("close", () => modalTrigger?.focus());
-    return modal;
-  }
-  function showModal(title, message, action) {
-    const box = ensureModal();
-    modalTrigger = document.activeElement;
-    box.replaceChildren();
-    const heading = document.createElement("h2");
-    heading.id = "modal-title";
-    heading.textContent = title;
-    const paragraph = document.createElement("p");
-    paragraph.textContent = message;
-    const controls = document.createElement("div");
-    controls.className = "modal-controls";
-    if (action) {
-      const actionButton = document.createElement("button");
-      actionButton.type = "button";
-      actionButton.textContent = action.label;
-      actionButton.addEventListener("click", () => action.run(paragraph));
-      controls.append(actionButton);
-    }
-    const closeButton = document.createElement("button");
-    closeButton.type = "button";
-    closeButton.textContent = "Close";
-    closeButton.addEventListener("click", () => box.close());
-    controls.append(closeButton);
-    box.append(heading, paragraph, controls);
-    box.showModal();
-    closeButton.focus();
-  }
+function updateTimer() {
+  if (!missionState.started || missionState.startTime === null) return;
+  $("#timer-display").textContent = formatElapsedTime(Date.now() - missionState.startTime);
+}
 
-  function initHome() {
-    document.getElementById("begin-booking").addEventListener("click", () => goTo("search"));
-    document.querySelectorAll("[data-home-modal]").forEach(button => button.addEventListener("click", () => {
-      const premium = button.dataset.homeModal === "premium";
-      showModal(premium ? "Premium Traveler Proposal" : "Explore Experiences", premium
-        ? "Our premium traveler program offers enhanced terminology and additional opportunities to inspect pillows. No upgrade has been added."
-        : "Explore a simulated lobby tour, a hypothetical concierge desk, and an imagined complimentary brochure. Your booking remains unchanged.");
-    }));
-  }
+function startTimer() {
+  if (missionState.started) return;
+  missionState.started = true;
+  missionState.startTime = Date.now();
+  updateTimer();
+  missionState.timerInterval = window.setInterval(updateTimer, 250);
+}
 
-  function setSelectOptions(select, placeholder, values) {
-    select.replaceChildren();
-    const blank = new Option(placeholder, "");
-    select.add(blank);
-    values.forEach(([value, label]) => select.add(new Option(label, String(value))));
-    select.disabled = values.length === 0;
-  }
-  function getDayOptions(year, month, week) {
-    const lastDay = new Date(Date.UTC(Number(year), Number(month), 0)).getUTCDate();
-    if (Number(month) === 11 && Number(week) === 2) return [16, 12, 15, 14, 13];
-    const start = (Number(week) - 1) * 7 + 1;
-    const days = [];
-    for (let day = start; day <= Math.min(start + 6, lastDay); day += 1) days.push(day);
-    return days.reverse();
-  }
-  function initSearch() {
-    const form = document.getElementById("search-form");
-    const location = document.getElementById("location");
-    const guests = document.getElementById("guests");
-    const year = document.getElementById("year");
-    const quarter = document.getElementById("quarter");
-    const month = document.getElementById("month");
-    const week = document.getElementById("week");
-    const day = document.getElementById("day");
-    const error = document.getElementById("search-error");
-    const state = getBookingState();
-    setSelectOptions(year, "Select year", [[2025, "2025"], [2026, "2026"], [2027, "2027"]]);
-    const fillQuarters = () => setSelectOptions(quarter, "Select quarter", year.value ? [["Q1", "Q1"], ["Q2", "Q2"], ["Q3", "Q3"], ["Q4", "Q4"]] : []);
-    const fillMonths = () => setSelectOptions(month, "Select month", quarter.value ? QUARTER_MONTHS[quarter.value].map(number => [number, MONTH_NAMES[number - 1]]) : []);
-    const fillWeeks = () => setSelectOptions(week, "Select week grouping", month.value ? WEEK_ORDER.map(number => [number, `Week ${number}`]) : []);
-    const fillDays = () => setSelectOptions(day, "Select day", week.value ? getDayOptions(year.value, month.value, week.value).map(number => [number, String(number)]) : []);
-    year.addEventListener("change", () => { fillQuarters(); fillMonths(); fillWeeks(); fillDays(); hideError(error); });
-    quarter.addEventListener("change", () => { fillMonths(); fillWeeks(); fillDays(); hideError(error); });
-    month.addEventListener("change", () => { fillWeeks(); fillDays(); hideError(error); });
-    week.addEventListener("change", () => { fillDays(); hideError(error); });
-    day.addEventListener("change", () => hideError(error));
-    location.value = state.location;
-    guests.value = state.guests ? String(state.guests) : "";
-    const path = state.datePath;
-    if (path.year) { year.value = path.year; fillQuarters(); }
-    if (path.quarter && !quarter.disabled) { quarter.value = path.quarter; fillMonths(); }
-    if (path.month && !month.disabled) { month.value = path.month; fillWeeks(); }
-    if (path.week && !week.disabled) { week.value = path.week; fillDays(); }
-    if (path.day && !day.disabled) day.value = path.day;
+function stopTimer() {
+  if (missionState.timerInterval !== null) window.clearInterval(missionState.timerInterval);
+  missionState.timerInterval = null;
+  missionState.finalTime = formatElapsedTime(Date.now() - missionState.startTime);
+  $("#timer-display").textContent = missionState.finalTime;
+}
 
-    document.getElementById("reset-search").addEventListener("click", () => {
-      clearBookingState();
-      form.reset();
-      fillQuarters(); fillMonths(); fillWeeks(); fillDays();
-      hideError(error);
-    });
-    form.addEventListener("submit", event => {
-      event.preventDefault();
-      if (![location, year, quarter, month, week, day, guests].every(select => select.value)) {
-        showError(error, "Some accommodation parameters remain unresolved. Check every selection above.");
-        return;
-      }
-      const date = `${year.value}-${month.value.padStart(2, "0")}-${day.value.padStart(2, "0")}`;
-      const checkout = new Date(Date.UTC(Number(year.value), Number(month.value) - 1, Number(day.value) + 1)).toISOString().slice(0, 10);
-      updateBookingState({
-        location: location.value, checkIn: date, checkOut: checkout, guests: Number(guests.value),
-        datePath: { year: year.value, quarter: quarter.value, month: month.value, week: week.value, day: day.value },
-        confirmationNumber: ""
-      });
-      goTo("results");
-    });
-  }
+function setStatus(id, active, activeText, inactiveText) {
+  const element = $(id);
+  element.classList.toggle("active", active);
+  element.querySelector("strong").textContent = active ? activeText : inactiveText;
+}
 
-  function roomActionCopy(action, room) {
-    switch (action) {
-      case "details": return ["Room Details", `${room.name}: ${room.description}`];
-      case "policies": return ["Room Policies", `${room.name} follows our simulated one-night policy. No real cancellation or payment occurs.`];
-      case "compare": return ["Qualitative Comparison", "Regret Standard is plain; Questionable Deluxe emphasizes decor; Executive Disappointment emphasizes its title. Review the displayed price components yourself."];
-      case "benefits": return ["Unrelated Benefits", "Benefits may include elaborate descriptions, ceremonial greetings, and an imaginary brochure. No booking option has changed."];
-      case "upgrade": return ["Premium Upgrade Information", "Premium choices are considered on a later screen. Opening this message has not enabled an upgrade."];
-      default: return ["Information", "No reservation choice has changed."];
-    }
-  }
-  function initResults() {
-    if (!requireState(["search"])) return;
-    const panel = document.getElementById("code-panel");
-    const codeDisplay = document.getElementById("room-code-display");
-    const selectionMessage = document.getElementById("selection-message");
-    const error = document.getElementById("results-error");
-    const render = () => {
-      const state = getBookingState();
-      document.querySelectorAll(".room-card").forEach(card => {
-        card.classList.toggle("applied-room", card.dataset.room === state.selectedRoom);
-        const saveButton = card.querySelector('[data-room-action="save"]');
-        const saved = state.savedRooms.includes(card.dataset.room);
-        saveButton.setAttribute("aria-pressed", String(saved));
-        saveButton.classList.toggle("saved-action", saved);
-      });
-      const showCode = Boolean(ROOM_DATA[state.selectedRoom] && !state.codeAcknowledged);
-      panel.hidden = !showCode;
-      codeDisplay.textContent = showCode ? ROOM_DATA[state.selectedRoom].code : "";
-      selectionMessage.textContent = state.selectedRoom && state.codeAcknowledged ? "Accommodation configuration acknowledged." : "";
-    };
-    render();
-    document.querySelector(".room-grid").addEventListener("click", event => {
-      const button = event.target.closest("button[data-room-action]");
-      if (!button) return;
-      const card = button.closest(".room-card");
-      const room = ROOM_DATA[card.dataset.room];
-      const action = button.dataset.roomAction;
-      if (action === "apply") {
-        updateBookingState({ selectedRoom: room.id, roomCode: room.code, codeAcknowledged: false, confirmationNumber: "" });
-        hideError(error);
-        render();
-        panel.setAttribute("tabindex", "-1");
-        panel.focus();
-      } else if (action === "save") {
-        const savedRooms = [...new Set([...getBookingState().savedRooms, room.id])];
-        updateBookingState({ savedRooms });
-        render();
-        showModal("Saved for Later", `${room.name} is saved for this browsing session. The selected room has not changed.`);
-      } else if (action === "share") {
-        const link = window.location.href;
-        showModal("Share Accommodation Candidate", `Share this simulated candidate page: ${link}`, {
-          label: "Copy Link",
-          run: async paragraph => {
-            try {
-              if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
-              await navigator.clipboard.writeText(link);
-              paragraph.textContent = "Link copied. No booking information was shared automatically.";
-            } catch {
-              paragraph.textContent = `Clipboard unavailable here. Select and copy this link manually: ${link}`;
-            }
-          }
-        });
-      } else {
-        const [title, message] = roomActionCopy(action, room);
-        showModal(title, message);
-      }
-    });
-    document.getElementById("acknowledge-code").addEventListener("click", () => {
-      updateBookingState({ codeAcknowledged: true, confirmationNumber: "" });
-      render();
-      document.getElementById("proceed-results").focus();
-    });
-    document.getElementById("cancel-search").addEventListener("click", () => { clearBookingState(); goTo("index"); });
-    document.getElementById("proceed-results").addEventListener("click", () => {
-      const state = getBookingState();
-      if (!state.selectedRoom) { showError(error, "An accommodation candidate must be applied before proceeding."); return; }
-      if (!state.codeAcknowledged) { showError(error, "Acknowledge the displayed identifier before proceeding."); panel.focus(); return; }
-      goTo("configure");
-    });
-  }
+function setMessage(id, text, positive = false) {
+  const element = $(id);
+  element.textContent = text;
+  element.classList.toggle("positive", positive);
+}
 
-  function initConfigure() {
-    if (!requireState(["search", "room"])) return;
-    const form = document.getElementById("configure-form");
-    const state = getBookingState();
-    const controls = Object.keys(EXTRA_NAMES).map(key => document.getElementById(key));
-    const renderRow = control => {
-      const row = control.closest(".extra-row");
-      row.classList.toggle("extra-on", control.checked);
-      row.classList.toggle("extra-off", !control.checked);
-    };
-    controls.forEach(control => {
-      control.checked = Boolean(state.extras[control.name]);
-      renderRow(control);
-      control.addEventListener("change", () => {
-        updateBookingState({ extras: { [control.name]: control.checked }, confirmationNumber: "" });
-        renderRow(control);
-      });
-    });
-    form.addEventListener("submit", event => { event.preventDefault(); goTo("guest"); });
-    document.getElementById("return-results").addEventListener("click", () => goTo("results"));
-  }
+function openModal(title, body) {
+  previousFocus = document.activeElement;
+  $("#modal-title").textContent = title;
+  $("#modal-body").textContent = body;
+  $("#modal").hidden = false;
+  $("#modal-close").focus();
+}
 
-  function initGuest() {
-    if (!requireState(["search", "room"])) return;
-    const form = document.getElementById("guest-form");
-    const error = document.getElementById("guest-error");
-    const keys = ["firstName", "lastName", "email", "phone"];
-    const state = getBookingState();
-    const values = () => Object.fromEntries(keys.map(key => [key, document.getElementById(key).value]));
-    keys.forEach(key => {
-      const input = document.getElementById(key);
-      input.value = state.guest[key] || "";
-      input.addEventListener("input", () => {
-        updateBookingState({ guest: { [key]: input.value }, confirmationNumber: "" });
-        input.removeAttribute("aria-invalid");
-        document.getElementById(`${key}-error`).textContent = "";
-        hideError(error);
-      });
-    });
-    form.addEventListener("submit", event => {
-      event.preventDefault();
-      const guest = values();
-      const errors = guestErrors(guest);
-      keys.forEach(key => {
-        const input = document.getElementById(key);
-        input.setAttribute("aria-invalid", String(Boolean(errors[key])));
-        document.getElementById(`${key}-error`).textContent = errors[key] || "";
-      });
-      if (Object.keys(errors).length) {
-        showError(error, "Identity parameters remain semantically incomplete. Correct the marked fields.");
-        document.getElementById(Object.keys(errors)[0]).focus();
-        return;
-      }
-      updateBookingState({ guest: Object.fromEntries(keys.map(key => [key, guest[key].trim()])), confirmationNumber: "" });
-      goTo("review");
-    });
-    document.getElementById("return-configure").addEventListener("click", () => goTo("configure"));
-  }
+function closeModal() {
+  $("#modal").hidden = true;
+  if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
+}
 
-  function readableDate(date) {
-    const [year, month, day] = date.split("-").map(Number);
-    return `${MONTH_NAMES[month - 1]} ${day}, ${year}`;
+function completePower() {
+  if (Number($("#power-allocation").value) === 35 && $("#power-allocation").value.trim() !== "") {
+    missionState.powerComplete = true;
+    setStatus("#power-status", true, "REACTOR ACTIVE", "REACTOR INACTIVE");
+    $("#shutdown-core").hidden = false;
+    setMessage("#power-message", "ENERGY CONFIGURATION RESOLVED.", true);
+  } else {
+    setMessage("#power-message", "ALLOCATION IMBALANCE. ENERGY RESOLUTION REJECTED.");
   }
-  function initReview() {
-    if (!requireState(["search", "room", "guest"])) return;
-    const summary = document.getElementById("review-summary");
-    const state = getBookingState();
-    const includedExtras = Object.entries(state.extras).filter(([, enabled]) => enabled).map(([key]) => EXTRA_NAMES[key]);
-    [
-      ["Room", ROOM_DATA[state.selectedRoom].name],
-      ["Dates", `${readableDate(state.checkIn)} to ${readableDate(state.checkOut)}`],
-      ["Guests", `${state.guests} adult${Number(state.guests) === 1 ? "" : "s"}`],
-      ["Configuration", includedExtras.length ? includedExtras.join(", ") : "No optional features included"]
-    ].forEach(([label, value]) => {
-      const dt = document.createElement("dt");
-      const dd = document.createElement("dd");
-      dt.textContent = label; dd.textContent = value;
-      summary.append(dt, dd);
-    });
-    const error = document.getElementById("review-error");
-    const errorText = document.getElementById("review-error-text");
-    const parameterList = document.getElementById("review-parameter-list");
-    const errorLink = document.getElementById("review-error-link");
-    const showReviewError = (message, page, label, corrections = []) => {
-      errorText.textContent = message;
-      parameterList.replaceChildren();
-      corrections.forEach(correction => {
-        const item = document.createElement("li");
-        item.textContent = correction;
-        parameterList.append(item);
-      });
-      parameterList.hidden = corrections.length === 0;
-      errorLink.href = `./${page}.html`;
-      errorLink.textContent = label;
-      error.hidden = false;
-      error.focus();
-    };
-    error.setAttribute("tabindex", "-1");
-    document.getElementById("review-form").addEventListener("submit", event => {
-      event.preventDefault();
-      const current = getBookingState();
-      error.hidden = true;
-      if (current.location !== "Charlottesville, VA" || current.checkIn !== "2026-11-14" || current.checkOut !== "2026-11-15" || Number(current.guests) !== 2) {
-        const corrections = [];
-        if (current.location !== "Charlottesville, VA") corrections.push(`Geographic Accommodation Zone is ${current.location || "blank"}; choose Charlottesville, VA.`);
-        if (current.checkIn !== "2026-11-14" || current.checkOut !== "2026-11-15") corrections.push(`Selected stay is ${readableDate(current.checkIn)} to ${readableDate(current.checkOut)}; choose November 14, 2026. Checkout becomes November 15 automatically.`);
-        if (Number(current.guests) !== 2) corrections.push(`Human Occupancy Quantity is ${current.guests}; choose 2.`);
-        showReviewError("The declared accommodation parameters do not satisfy the requested task. Correct the values below, then press Continue on the search page to save them.", "search", "Return to Accommodation Parameters", corrections);
-      } else if (current.selectedRoom !== cheapestRoomId()) {
-        showReviewError("The selected accommodation does not satisfy the requested economic criterion. Revisit accommodation comparison.", "results", "Return to Accommodation Candidates");
-      } else if (Object.values(current.extras).some(Boolean)) {
-        showReviewError("Optional inclusions conflict with the requested no-upgrade configuration.", "configure", "Return to Preference Resolution");
-      } else if (!hasGuest(current)) {
-        showReviewError("Identity parameters remain semantically incomplete.", "guest", "Return to Occupancy Declaration");
-      } else if (document.getElementById("entered-code").value.toUpperCase() !== current.roomCode.toUpperCase()) {
-        showReviewError("Transient identifier validation unsuccessful.", "results", "Return to Accommodation Candidates");
-      } else {
-        updateBookingState({ confirmationNumber: "ANTI-2026-417" });
-        goTo("confirmation");
-      }
-    });
-    document.getElementById("abort-review").addEventListener("click", () => goTo("guest"));
-  }
+}
 
-  function initConfirmation() {
-    if (!requireState(["search", "room", "guest", "confirmation"])) return;
-    const state = getBookingState();
-    document.getElementById("confirmation-number").textContent = state.confirmationNumber;
-    document.getElementById("confirmation-room").textContent = ROOM_DATA[state.selectedRoom].name;
-    document.getElementById("start-over").addEventListener("click", () => { clearBookingState(); goTo("index"); });
-  }
+function updateNavigation(changedIndex = 0) {
+  const ids = ["galaxy", "region", "stellar", "classification"];
+  const wraps = ["region-wrap", "stellar-wrap", "classification-wrap", "destination-wrap"];
+  const correct = ["Milky Way", "Orion Spur", "Sol", "Terrestrial Worlds"];
+  for (let i = changedIndex + 1; i < ids.length; i += 1) $(`#${ids[i]}`).value = "";
+  missionState.selectedDestination = null;
+  $$("#destination-options button").forEach((button) => button.classList.remove("selected"));
+  missionState.navigationComplete = false;
+  setStatus("#navigation-status", false, "EARTH ROUTE LOCKED", "VECTOR NOT LOCKED");
+  setMessage("#navigation-message", "");
+  wraps.forEach((wrap, index) => {
+    $("#" + wrap).hidden = correct.slice(0, index + 1).some((value, i) => $(`#${ids[i]}`).value !== value);
+  });
+}
 
-  const page = document.body.dataset.page;
-  if (page === "home") initHome();
-  if (page === "search") initSearch();
-  if (page === "results") initResults();
-  if (page === "configure") initConfigure();
-  if (page === "guest") initGuest();
-  if (page === "review") initReview();
-  if (page === "confirmation") initConfirmation();
+function applyNavigationVector() {
+  const correctPath = $("#galaxy").value === "Milky Way" && $("#region").value === "Orion Spur" && $("#stellar").value === "Sol" && $("#classification").value === "Terrestrial Worlds" && missionState.selectedDestination === "Earth";
+  if (correctPath) {
+    missionState.navigationComplete = true;
+    setStatus("#navigation-status", true, "EARTH ROUTE LOCKED", "VECTOR NOT LOCKED");
+    setMessage("#navigation-message", "TRANSIT VECTOR ACCEPTED.", true);
+  } else {
+    setMessage("#navigation-message", "VECTOR ACCEPTED BY REGISTRY, BUT MISSION DESTINATION REQUIREMENT NOT SATISFIED.");
+  }
+}
+
+function showCommunicationCode() {
+  missionState.commStage = "code";
+  missionState.communicationsComplete = false;
+  $("#comm-code-stage").hidden = false;
+  $("#comm-transmitter-stage").hidden = true;
+  $("#relay-identifier").value = "";
+  setStatus("#communications-status", false, "EARTH LINK ACTIVE", "EARTH LINK INACTIVE");
+  setMessage("#communications-message", "");
+}
+
+function openTransmitter() {
+  missionState.commStage = "transmitter";
+  $("#comm-code-stage").hidden = true;
+  $("#comm-transmitter-stage").hidden = false;
+  setMessage("#communications-message", "");
+  $("#relay-identifier").focus();
+}
+
+function validateCommunicationCode() {
+  if ($("#relay-identifier").value.trim().toUpperCase() === missionState.commCode) {
+    missionState.communicationsComplete = true;
+    setStatus("#communications-status", true, "EARTH LINK ACTIVE", "EARTH LINK INACTIVE");
+    setMessage("#communications-message", "EARTH TRANSMISSION ESTABLISHED.", true);
+  } else {
+    setMessage("#communications-message", "RELAY AUTHENTICATION FAILURE. TRANSMISSION KEY REJECTED.");
+  }
+}
+
+function primeEngine() {
+  missionState.enginePrimed = true;
+  missionState.engineArmed = false;
+  setMessage("#engine-message", "PRELIMINARY PRIMING ACKNOWLEDGED.", true);
+}
+
+function armEngine() {
+  if (!missionState.enginePrimed) {
+    setMessage("#engine-message", "ARMATURE CONDITION INVALID. PRECURSOR STATE UNRESOLVED.");
+    return;
+  }
+  missionState.engineArmed = true;
+  setMessage("#engine-message", "ARMATURE RESOLUTION ACKNOWLEDGED.", true);
+}
+
+function executeEngine() {
+  if ($("#engine-mode").value === "SAFE-BURN" && $("#thermal-bypass").value === "OFF" && missionState.enginePrimed && missionState.engineArmed) {
+    missionState.engineComplete = true;
+    setStatus("#engine-status", true, "PROPULSION ACTIVE", "PROPULSION INACTIVE");
+    $("#engine-shutdown").hidden = false;
+    setMessage("#engine-message", "HELICOCENTRIC TRAJECTORY RECONCILIATION COMPLETE.", true);
+  } else {
+    setMessage("#engine-message", "ERR-E37 · PHASE INTERLOCK UNSATISFIED · RESOLUTION REQUIRED");
+  }
+}
+
+function openLaunchControl() {
+  if (missionState.powerComplete && missionState.navigationComplete && missionState.communicationsComplete && missionState.engineComplete) {
+    showScreen("launch-screen");
+  } else {
+    openModal("KANISHKOS READINESS FAILURE", "READINESS CONDITION NOT MET. SUBSYSTEM RESTORATION REMAINS INCOMPLETE.");
+  }
+}
+
+function resetMission() {
+  if (missionState.timerInterval !== null) window.clearInterval(missionState.timerInterval);
+  Object.assign(missionState, {
+    started: false, startTime: null, timerInterval: null, finalTime: null,
+    powerComplete: false, navigationComplete: false, communicationsComplete: false, engineComplete: false,
+    commStage: "code", selectedDestination: null, enginePrimed: false, engineArmed: false
+  });
+  $("#timer-display").textContent = "00:00";
+  $("#final-time").textContent = "00:00";
+  $("#power-allocation").value = "";
+  [["aux-bias", 43], ["harmonic", 12], ["thermal-delta", 24], ["bus-scaling", 62]].forEach(([id, value]) => {
+    $("#" + id).value = value;
+    $("#" + id).dispatchEvent(new Event("input"));
+  });
+  [["shield-reserve", "BALANCED", "shield-readout"], ["flux-coupler", "MODE B", "flux-readout"], ["grid-compensation", "AUTO", "grid-readout"]].forEach(([id, value, readout]) => {
+    $("#" + id).value = value;
+    $("#" + readout).textContent = value;
+  });
+  ["galaxy", "region", "stellar", "classification"].forEach((id) => { $("#" + id).value = ""; });
+  updateNavigation();
+  showCommunicationCode();
+  $("#engine-mode").value = "MVR-2";
+  $("#thermal-bypass").value = "ON";
+  ["field-sync", "aux-dampener", "burn-permission", "safety-suppression"].forEach((id) => { $("#" + id).checked = false; });
+  $("#engine-switch-readout").textContent = "FIELD ARRAY / PASSIVE";
+  setStatus("#power-status", false, "REACTOR ACTIVE", "REACTOR INACTIVE");
+  setStatus("#engine-status", false, "PROPULSION ACTIVE", "PROPULSION INACTIVE");
+  $("#shutdown-core").hidden = true;
+  $("#engine-shutdown").hidden = true;
+  ["power-message", "navigation-message", "communications-message", "engine-message"].forEach((id) => setMessage("#" + id, ""));
+  closeModal();
+  showScreen("intro-screen");
+}
+
+$("#begin-repair").addEventListener("click", () => { startTimer(); showScreen("power-screen"); });
+$$('.system-nav button[data-screen]').forEach((button) => button.addEventListener("click", () => showScreen(button.dataset.screen)));
+$$('.launch-control').forEach((button) => button.addEventListener("click", openLaunchControl));
+
+const helpText = {
+  power: "The Power subsystem manages spacecraft power.",
+  navigation: "Select an appropriate celestial destination.",
+  communications: "Provide the required communication identifier.",
+  engine: "Resolve propulsion errors before execution."
+};
+$$('[data-help]').forEach((button) => button.addEventListener("click", () => openModal("KANISHKOS HELP", helpText[button.dataset.help])));
+$$('.upgrade-button').forEach((button) => button.addEventListener("click", () => openModal("PREMIUM SERVICES UNAVAILABLE", "KanishkOS Premium services are unavailable on damaged spacecraft. Benefits remain classified.")));
+$("#modal-close").addEventListener("click", closeModal);
+$("#modal-dismiss").addEventListener("click", closeModal);
+$("#modal").addEventListener("click", (event) => { if (event.target.id === "modal") closeModal(); });
+document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !$("#modal").hidden) closeModal(); });
+
+$$('[data-output]').forEach((input) => input.addEventListener("input", () => {
+  $("#" + input.dataset.output).textContent = input.dataset.thermal ? `+${(Number(input.value) / 10).toFixed(1)}K` : input.value + input.dataset.suffix;
+}));
+[["shield-reserve", "shield-readout"], ["flux-coupler", "flux-readout"], ["grid-compensation", "grid-readout"]].forEach(([id, readout]) => $("#" + id).addEventListener("change", () => { $("#" + readout).textContent = $("#" + id).value; }));
+$("#resolve-power").addEventListener("click", completePower);
+$("#shutdown-core").addEventListener("click", () => {
+  missionState.powerComplete = false;
+  setStatus("#power-status", false, "REACTOR ACTIVE", "REACTOR INACTIVE");
+  $("#shutdown-core").hidden = true;
+  setMessage("#power-message", "CORE SHUTDOWN CONFIRMED.");
+});
+
+["galaxy", "region", "stellar", "classification"].forEach((id, index) => $("#" + id).addEventListener("change", () => updateNavigation(index)));
+$$('#destination-options button').forEach((button) => button.addEventListener("click", () => {
+  missionState.selectedDestination = button.dataset.destination;
+  $$('#destination-options button').forEach((option) => option.classList.toggle("selected", option === button));
+  missionState.navigationComplete = false;
+  setStatus("#navigation-status", false, "EARTH ROUTE LOCKED", "VECTOR NOT LOCKED");
+  setMessage("#navigation-message", "");
+}));
+$("#apply-vector").addEventListener("click", applyNavigationVector);
+
+$("#proceed-transmitter").addEventListener("click", openTransmitter);
+$("#reacquire-relay").addEventListener("click", showCommunicationCode);
+$("#establish-relay").addEventListener("click", validateCommunicationCode);
+$("#relay-identifier").addEventListener("keydown", (event) => { if (event.key === "Enter") validateCommunicationCode(); });
+
+function invalidateEngineIfNeeded() {
+  if (missionState.engineComplete && ($("#engine-mode").value !== "SAFE-BURN" || $("#thermal-bypass").value !== "OFF")) {
+    missionState.engineComplete = false;
+    setStatus("#engine-status", false, "PROPULSION ACTIVE", "PROPULSION INACTIVE");
+    $("#engine-shutdown").hidden = true;
+  }
+}
+$("#engine-mode").addEventListener("change", invalidateEngineIfNeeded);
+$("#thermal-bypass").addEventListener("change", invalidateEngineIfNeeded);
+$$('.engine-switches input').forEach((input) => input.addEventListener("change", () => {
+  $("#engine-switch-readout").textContent = `FIELD ARRAY / ${$$('.engine-switches input:checked').length} AUXILIARY CHANNELS ENGAGED`;
+}));
+$$('[data-engine-action]').forEach((button) => button.addEventListener("click", () => {
+  switch (button.dataset.engineAction) {
+    case "calibrate": setMessage("#engine-message", "CALIBRATION MATRIX NORMALIZED.", true); break;
+    case "prime": primeEngine(); break;
+    case "synchronize": setMessage("#engine-message", "FIELD HARMONICS SYNCHRONIZED.", true); break;
+    case "diagnostic": openModal("ENGINE DIAGNOSTIC", "G-PROP telemetry nominal. Phase interlock details remain classified by KanishkOS."); break;
+    case "purge": setMessage("#engine-message", "AUXILIARY EXHAUST CHANNEL PURGED.", true); break;
+    case "arm": armEngine(); break;
+    case "bypass": $("#thermal-bypass").value = $("#thermal-bypass").value === "ON" ? "OFF" : "ON"; invalidateEngineIfNeeded(); setMessage("#engine-message", "THERMAL BYPASS CHANNEL RECONFIGURED.", true); break;
+    case "execute": executeEngine(); break;
+  }
+}));
+$("#engine-shutdown").addEventListener("click", () => {
+  missionState.engineComplete = false;
+  missionState.enginePrimed = false;
+  missionState.engineArmed = false;
+  setStatus("#engine-status", false, "PROPULSION ACTIVE", "PROPULSION INACTIVE");
+  $("#engine-shutdown").hidden = true;
+  setMessage("#engine-message", "SAFE SHUTDOWN COMPLETE.");
+});
+
+$("#launch-to-earth").addEventListener("click", () => {
+  stopTimer();
+  $("#final-time").textContent = missionState.finalTime;
+  showScreen("success-screen");
+});
+$("#retry-mission").addEventListener("click", resetMission);
 })();
