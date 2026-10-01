@@ -13,6 +13,7 @@ const missionState = {
   commStage: "code",
   commCode: "K21-4187-X",
   selectedDestination: null,
+  lastSubsystemScreen: "power-screen",
   enginePrimed: false,
   engineArmed: false
 };
@@ -22,7 +23,14 @@ const $$ = (selector) => document.querySelectorAll(selector);
 let previousFocus = null;
 
 function showScreen(screenId) {
+  if (["power-screen", "navigation-screen", "communications-screen", "engine-screen"].includes(screenId)) {
+    missionState.lastSubsystemScreen = screenId;
+  }
   $$(".screen").forEach((screen) => { screen.hidden = screen.id !== screenId; });
+  if (screenId === "intro-screen") {
+    $("#begin-repair-label").textContent = missionState.started ? "RESUME REPAIR" : "BEGIN REPAIR";
+    $("#intro-timer-note").textContent = missionState.started ? "Mission timer continues while you are here." : "Timer begins when repair starts.";
+  }
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
@@ -180,7 +188,7 @@ function resetMission() {
   Object.assign(missionState, {
     started: false, startTime: null, timerInterval: null, finalTime: null,
     powerComplete: false, navigationComplete: false, communicationsComplete: false, engineComplete: false,
-    commStage: "code", selectedDestination: null, enginePrimed: false, engineArmed: false
+    commStage: "code", selectedDestination: null, lastSubsystemScreen: "power-screen", enginePrimed: false, engineArmed: false
   });
   $("#timer-display").textContent = "00:00";
   $("#final-time").textContent = "00:00";
@@ -209,7 +217,8 @@ function resetMission() {
   showScreen("intro-screen");
 }
 
-$("#begin-repair").addEventListener("click", () => { startTimer(); showScreen("power-screen"); });
+$("#brand-home").addEventListener("click", () => showScreen("intro-screen"));
+$("#begin-repair").addEventListener("click", () => { startTimer(); showScreen(missionState.lastSubsystemScreen); });
 $$('.system-nav button[data-screen]').forEach((button) => button.addEventListener("click", () => showScreen(button.dataset.screen)));
 $$('.launch-control').forEach((button) => button.addEventListener("click", openLaunchControl));
 

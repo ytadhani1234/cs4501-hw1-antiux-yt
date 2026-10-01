@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b18">
   <title>Roll No. 21: Space Mein Dhoom Dhadaka | KanishkOS</title>
-  <link rel="stylesheet" href="styles.css?v=20261001-1">
-  <script src="app.js?v=3" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20261001-2">
+  <script src="app.js?v=4" defer></script>
 </head>
 <body>
   <div class="site-shell">
     <header class="site-header">
-      <div class="brand">
+      <button type="button" id="brand-home" class="brand" aria-label="Return to mission home" title="Mission home">
         <span class="brand-roll">ROLL NO. <strong>21</strong></span>
         <span class="brand-title">SPACE MEIN <b>DHOOM DHADAKA</b></span>
-      </div>
+      </button>
       <div class="os-brand"><span class="orbit-logo" aria-hidden="true">K</span><span>KANISHK<span class="os-blue">OS</span><small>EMERGENCY CONTROL SYSTEM</small></span></div>
       <div class="timer" aria-live="off"><span>MISSION TIMER</span><strong id="timer-display">00:00</strong></div>
     </header>
@@ -28,7 +28,7 @@
             <p class="intro-lede">Kris's spaceship has been damaged.</p>
             <p class="intro-description">Restore the four critical spacecraft systems and launch his ship back to Earth.</p>
             <div class="system-names" aria-label="Systems to restore"><span>POWER</span><span>NAVIGATION</span><span>COMMUNICATIONS</span><span>ENGINE</span></div>
-            <div class="intro-actions"><button type="button" id="begin-repair" class="button button-primary button-huge">BEGIN REPAIR <span aria-hidden="true">↗</span></button><div><small>Timer begins when repair starts.</small><a href="documentation.html" target="_blank" rel="noopener">ASSIGNMENT DOCUMENTATION ↗</a></div></div>
+            <div class="intro-actions"><button type="button" id="begin-repair" class="button button-primary button-huge"><span id="begin-repair-label">BEGIN REPAIR</span> <span aria-hidden="true">↗</span></button><div><small id="intro-timer-note">Timer begins when repair starts.</small><a href="documentation.html" target="_blank" rel="noopener">ASSIGNMENT DOCUMENTATION ↗</a></div></div>
           </div>
           <div class="intro-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><img src="assets/earth.jpg" alt=""><div class="ship-shape"><span></span></div><div class="art-label">EARTH / RETURN VECTOR</div></div>
         </div>
